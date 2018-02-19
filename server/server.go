@@ -5,34 +5,37 @@ import (
 	"net"
 )
 
+// Handler interface that represents the behavior of a handler
 type Handler interface {
 	ServeConnection(conn net.Conn) error
 }
 
+// Server interface that represents the behavior of a server
 type Server interface {
 	Listen()
 }
 
-type TCPServer struct {
-	addr    string
-	handler Handler
-}
-
-func NewTCPServer(address string, onConnectionHandler Handler) *TCPServer {
-	return &TCPServer{
+// NewTCPServer creates a new Server that listen on an TCP port
+func NewTCPServer(address string, onConnectionHandler Handler) Server {
+	return &tcpServer{
 		address,
 		onConnectionHandler,
 	}
 }
 
-func (s *TCPServer) handleConnection(conn net.Conn) {
+type tcpServer struct {
+	addr    string
+	handler Handler
+}
+
+func (s *tcpServer) handleConnection(conn net.Conn) {
 	log.Printf("Handling connection from %s", conn.RemoteAddr())
 	if err := s.handler.ServeConnection(conn); err != nil {
 		log.Println(err)
 	}
 }
 
-func (s *TCPServer) Listen() {
+func (s *tcpServer) Listen() {
 	listen, err := net.Listen("tcp", s.addr)
 
 	if err != nil {

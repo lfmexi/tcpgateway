@@ -4,16 +4,17 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 )
 
-type PacketEventEmitter struct {
+// NewPacketEventEmitter creates a new PacketEventEmitter
+func NewPacketEventEmitter(s events.EventSource) events.EventEmitter {
+	return &packetEventEmitter{
+		s,
+	}
+}
+
+type packetEventEmitter struct {
 	source events.EventSource
 }
 
-func (p *PacketEventEmitter) Emit(key string, data []byte) error {
+func (p *packetEventEmitter) Emit(key string, data []byte) error {
 	return p.source.Publish(key, data)
-}
-
-func NewPacketEventEmitter(s events.EventSource) events.EventEmitter {
-	return &PacketEventEmitter{
-		s,
-	}
 }

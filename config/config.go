@@ -14,17 +14,18 @@ var host = "0.0.0.0"
 var port = "8889"
 
 func readerServiceFactory() readers.ReaderServiceFactory {
-	return &readers.ContinuousReaderServiceFactory{}
+	return readers.NewContinuousReaderServiceFactory()
 }
 
 func writerServiceFactory() writers.WriterServiceFactory {
-	return &writers.AsyncWriterServiceFactory{}
+	return writers.NewAsyncWriterServiceFactory()
 }
 
 func handler() server.Handler {
 	return handlers.NewConnectionHandler(sessionService(), publisherService(), packetEventSubscriberFactory(), readerServiceFactory(), writerServiceFactory())
 }
 
+// ConfigureServer creates a new tcp server with a configured connection handler
 func ConfigureServer() server.Server {
 	if envhost := os.Getenv("SERVER_HOST"); envhost != "" {
 		host = envhost

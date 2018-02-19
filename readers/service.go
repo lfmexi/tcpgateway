@@ -8,11 +8,13 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/publisher"
 )
 
+// ReaderService interface that represents a reader service
 type ReaderService interface {
 	ReadFirstLine() ([]byte, error)
 	ReadTraces(*session.Session) error
 }
 
+// ReaderServiceFactory interface that describes an abstract factory of readers
 type ReaderServiceFactory interface {
 	CreateReaderService(*bufio.Reader, publisher.Service) ReaderService
 }

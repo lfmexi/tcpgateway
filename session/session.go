@@ -7,6 +7,7 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 )
 
+// Session represents an initialized session
 type Session struct {
 	SessionID        string
 	SessionAckPacket []byte

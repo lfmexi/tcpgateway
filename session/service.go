@@ -6,23 +6,25 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 )
 
+// Service interface that represents the session service
 type Service interface {
 	CreateSession(string, []byte) (*Session, error)
 }
 
-type EventSessionService struct {
-	eventEmitter           events.EventEmitter
-	eventSubscriberFactory events.EventSubscriberFactory
-}
-
-func NewEventSessionService(eventEmitter events.EventEmitter, eventSubscriberFactory events.EventSubscriberFactory) *EventSessionService {
-	return &EventSessionService{
+// NewEventSessionService creates a new event based session service
+func NewEventSessionService(eventEmitter events.EventEmitter, eventSubscriberFactory events.EventSubscriberFactory) Service {
+	return &eventSessionService{
 		eventEmitter,
 		eventSubscriberFactory,
 	}
 }
 
-func (s EventSessionService) CreateSession(sessionAddress string, payload []byte) (*Session, error) {
+type eventSessionService struct {
+	eventEmitter           events.EventEmitter
+	eventSubscriberFactory events.EventSubscriberFactory
+}
+
+func (s eventSessionService) CreateSession(sessionAddress string, payload []byte) (*Session, error) {
 
 	eventObserver := s.eventSubscriberFactory.CreateEventSubscriber()
 

@@ -5,6 +5,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// CreateEventSource creates a new amqp EventSource
 func CreateEventSource(conn *amqp.Connection, cc *AmqpConsumerConfig, pc *AmqpPublisherConfig) events.EventSource {
 	return &amqpEventSource{
 		conn,

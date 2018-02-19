@@ -6,14 +6,15 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 )
 
-type keyBasedEventSubscriberFactory struct {
-	eventSource events.EventSource
-}
-
+// NewKeyBasedEventSubscriberFactory creates a new event subscriber factory based on keys
 func NewKeyBasedEventSubscriberFactory(eventSource events.EventSource) events.EventSubscriberFactory {
 	return &keyBasedEventSubscriberFactory{
 		eventSource,
 	}
+}
+
+type keyBasedEventSubscriberFactory struct {
+	eventSource events.EventSource
 }
 
 func (factory *keyBasedEventSubscriberFactory) CreateEventSubscriber() events.EventSubscriber {

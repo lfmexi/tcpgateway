@@ -10,12 +10,27 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/publisher"
 )
 
-type ContinuousReaderService struct {
+// NewContinuousReaderServiceFactory creates a new reader factory of continuous readers
+func NewContinuousReaderServiceFactory() ReaderServiceFactory {
+	return &continuousReaderServiceFactory{}
+}
+
+type continuousReaderServiceFactory struct {
+}
+
+func (c *continuousReaderServiceFactory) CreateReaderService(reader *bufio.Reader, publisherService publisher.Service) ReaderService {
+	return &continuousReaderService{
+		reader,
+		publisherService,
+	}
+}
+
+type continuousReaderService struct {
 	reader           *bufio.Reader
 	publisherService publisher.Service
 }
 
-func (c *ContinuousReaderService) ReadFirstLine() ([]byte, error) {
+func (c *continuousReaderService) ReadFirstLine() ([]byte, error) {
 	line, _, err := c.reader.ReadLine()
 
 	if err == nil && len(line) == 0 {
@@ -25,7 +40,7 @@ func (c *ContinuousReaderService) ReadFirstLine() ([]byte, error) {
 	return line, err
 }
 
-func (c *ContinuousReaderService) ReadTraces(s *session.Session) error {
+func (c *continuousReaderService) ReadTraces(s *session.Session) error {
 	for {
 		line, _, err := c.reader.ReadLine()
 
@@ -44,15 +59,5 @@ func (c *ContinuousReaderService) ReadTraces(s *session.Session) error {
 		if len(line) > 0 {
 			c.publisherService.Publish(s.SessionID, line)
 		}
-	}
-}
-
-type ContinuousReaderServiceFactory struct {
-}
-
-func (c *ContinuousReaderServiceFactory) CreateReaderService(reader *bufio.Reader, publisherService publisher.Service) ReaderService {
-	return &ContinuousReaderService{
-		reader,
-		publisherService,
 	}
 }

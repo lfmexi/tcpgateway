@@ -7,22 +7,14 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 	"bitbucket.org/challengerdevs/gpsdriver/publisher"
 	"bitbucket.org/challengerdevs/gpsdriver/readers"
+	"bitbucket.org/challengerdevs/gpsdriver/server"
 	"bitbucket.org/challengerdevs/gpsdriver/session"
 	"bitbucket.org/challengerdevs/gpsdriver/writers"
 )
 
-// DriverConnectionHandler is the tcp handler that will be used for the driver
-type DriverConnectionHandler struct {
-	sessionService         session.Service
-	publisherService       publisher.Service
-	eventSubscriberFactory events.EventSubscriberFactory
-	readerServiceFactory   readers.ReaderServiceFactory
-	writerServiceFactory   writers.WriterServiceFactory
-}
-
 // NewConnectionHandler creates a new driver connection handler
-func NewConnectionHandler(ss session.Service, publisher publisher.Service, evSubFactory events.EventSubscriberFactory, rsf readers.ReaderServiceFactory, wsf writers.WriterServiceFactory) *DriverConnectionHandler {
-	return &DriverConnectionHandler{
+func NewConnectionHandler(ss session.Service, publisher publisher.Service, evSubFactory events.EventSubscriberFactory, rsf readers.ReaderServiceFactory, wsf writers.WriterServiceFactory) server.Handler {
+	return &driverConnectionHandler{
 		ss,
 		publisher,
 		evSubFactory,
@@ -31,8 +23,15 @@ func NewConnectionHandler(ss session.Service, publisher publisher.Service, evSub
 	}
 }
 
-// ServeConnection handles a tcp connection
-func (c *DriverConnectionHandler) ServeConnection(conn net.Conn) error {
+type driverConnectionHandler struct {
+	sessionService         session.Service
+	publisherService       publisher.Service
+	eventSubscriberFactory events.EventSubscriberFactory
+	readerServiceFactory   readers.ReaderServiceFactory
+	writerServiceFactory   writers.WriterServiceFactory
+}
+
+func (c *driverConnectionHandler) ServeConnection(conn net.Conn) error {
 	defer conn.Close()
 
 	reader := bufio.NewReader(conn)

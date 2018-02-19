@@ -4,20 +4,22 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 )
 
+// Service interface that represents a publisher service
 type Service interface {
 	Publish(string, []byte) error
 }
 
-type EventPublisherService struct {
-	traceEventEmitter events.EventEmitter
-}
-
-func NewEventPublisherService(traceEventEmitter events.EventEmitter) *EventPublisherService {
-	return &EventPublisherService{
+// NewEventPublisherService creates a new event publisher service
+func NewEventPublisherService(traceEventEmitter events.EventEmitter) Service {
+	return &eventPublisherService{
 		traceEventEmitter,
 	}
 }
 
-func (es EventPublisherService) Publish(sessionID string, data []byte) error {
+type eventPublisherService struct {
+	traceEventEmitter events.EventEmitter
+}
+
+func (es eventPublisherService) Publish(sessionID string, data []byte) error {
 	return es.traceEventEmitter.Emit(sessionID, data)
 }

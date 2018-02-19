@@ -8,11 +8,24 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/session"
 )
 
-type AsyncWriterService struct {
+// NewAsyncWriterServiceFactory creates a new factory of asynchronous writers
+func NewAsyncWriterServiceFactory() WriterServiceFactory {
+	return &asyncWriterServiceFactory{}
+}
+
+type asyncWriterServiceFactory struct{}
+
+func (asyncWriterServiceFactory) CreateWriterService(writer *bufio.Writer) WriterService {
+	return &asyncWriterService{
+		writer,
+	}
+}
+
+type asyncWriterService struct {
 	writer *bufio.Writer
 }
 
-func (a *AsyncWriterService) WriteSinglePacket(packet []byte) error {
+func (a *asyncWriterService) WriteSinglePacket(packet []byte) error {
 	if _, err := a.writer.Write(packet); err != nil {
 		return err
 	}
@@ -20,7 +33,7 @@ func (a *AsyncWriterService) WriteSinglePacket(packet []byte) error {
 	return a.writer.Flush()
 }
 
-func (a *AsyncWriterService) WriteOnEventSubscriber(s *session.Session, es events.EventSubscriber) error {
+func (a *asyncWriterService) WriteOnEventSubscriber(s *session.Session, es events.EventSubscriber) error {
 	log.Printf("Waiting for messages to %s", s.SessionID)
 	eventChannel, err := es.Observe(s.SessionID)
 
@@ -53,12 +66,4 @@ func (a *AsyncWriterService) WriteOnEventSubscriber(s *session.Session, es event
 	}()
 
 	return nil
-}
-
-type AsyncWriterServiceFactory struct{}
-
-func (AsyncWriterServiceFactory) CreateWriterService(writer *bufio.Writer) WriterService {
-	return &AsyncWriterService{
-		writer,
-	}
 }
