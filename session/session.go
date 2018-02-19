@@ -8,22 +8,33 @@ import (
 )
 
 type Session struct {
-	EventType        string          `json:"event_name"`
-	SessionID        string          `json:"device_id"`
-	SessionAckPacket json.RawMessage `json:"ack_packet"`
+	SessionID        string
+	SessionAckPacket []byte
 	Disconnected     chan bool
 }
 
+type sessionEvent struct {
+	EventType        string          `json:"event_name"`
+	SessionID        string          `json:"device_id"`
+	SessionAckPacket json.RawMessage `json:"ack_packet"`
+}
+
 func newSession(event events.Event) (*Session, error) {
-	s := Session{}
+	sEvt := sessionEvent{}
 
-	err := json.Unmarshal(event.Data(), &s)
+	if err := json.Unmarshal(event.Data(), &sEvt); err != nil {
+		return nil, err
+	}
 
-	if s.EventType != "sessionAck" {
+	if sEvt.EventType != "sessionAck" {
 		return nil, fmt.Errorf("Session event was expected")
 	}
 
+	s := Session{}
+
+	s.SessionID = sEvt.SessionID
+	s.SessionAckPacket = sEvt.SessionAckPacket
 	s.Disconnected = make(chan bool)
 
-	return &s, err
+	return &s, nil
 }
