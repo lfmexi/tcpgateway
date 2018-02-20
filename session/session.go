@@ -16,7 +16,7 @@ type Session struct {
 
 type sessionEvent struct {
 	EventType        string          `json:"event_name"`
-	SessionID        string          `json:"device_id"`
+	SessionID        string          `json:"session_id"`
 	SessionAckPacket json.RawMessage `json:"ack_packet"`
 }
 

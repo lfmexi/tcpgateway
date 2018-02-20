@@ -2,13 +2,14 @@ package config
 
 import (
 	"bitbucket.org/challengerdevs/gpsdriver/events"
+	"bitbucket.org/challengerdevs/gpsdriver/packets"
 	"bitbucket.org/challengerdevs/gpsdriver/session"
 	"bitbucket.org/challengerdevs/gpsdriver/subscriber"
 )
 
 func sessionEventEmitter() events.EventEmitter {
 	eventSource := sessionEventSource()
-	return session.NewSessionEventEmitter(eventSource)
+	return packets.NewPacketEventEmitter(eventSource)
 }
 
 func sessionEventSubscriberFactory() events.EventSubscriberFactory {

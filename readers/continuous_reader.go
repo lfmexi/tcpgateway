@@ -45,10 +45,7 @@ func (c *continuousReaderService) ReadTraces(s *session.Session) error {
 		line, _, err := c.reader.ReadLine()
 
 		if err != nil {
-			if err.Error() == "EOF" {
-				log.Printf("EOF for session %s", s.SessionID)
-				err = nil
-			}
+			log.Printf("EOF for session %s", s.SessionID)
 
 			s.Disconnected <- true
 
