@@ -5,4 +5,4 @@ Build: [![CircleCI](https://circleci.com/bb/challengerdevs/gpsdriver.svg?style=s
 
 # Requirements
 
-- go 1.9
+- go 1.10
