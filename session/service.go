@@ -1,6 +1,8 @@
 package session
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 
 	"bitbucket.org/challengerdevs/gpsdriver/events"
@@ -8,7 +10,7 @@ import (
 
 // Service interface that represents the session service
 type Service interface {
-	CreateSession(string, []byte) (*Session, error)
+	CreateSession(string, string, []byte) (*Session, error)
 }
 
 // NewEventSessionService creates a new event based session service
@@ -24,8 +26,7 @@ type eventSessionService struct {
 	eventSubscriberFactory events.EventSubscriberFactory
 }
 
-func (s eventSessionService) CreateSession(sessionAddress string, payload []byte) (*Session, error) {
-
+func (s eventSessionService) CreateSession(sessionAddress string, deviceType string, payload []byte) (*Session, error) {
 	eventObserver := s.eventSubscriberFactory.CreateEventSubscriber()
 
 	eventChannel, err := eventObserver.Observe(sessionAddress)
@@ -34,7 +35,7 @@ func (s eventSessionService) CreateSession(sessionAddress string, payload []byte
 		return nil, err
 	}
 
-	if err := s.eventEmitter.Emit(sessionAddress, payload); err != nil {
+	if err := s.eventEmitter.Emit("login."+deviceType, payload); err != nil {
 		return nil, err
 	}
 
@@ -46,5 +47,26 @@ func (s eventSessionService) CreateSession(sessionAddress string, payload []byte
 		return nil, err
 	}
 
-	return newSession(sessionAckEvent)
+	return s.newSession(sessionAckEvent)
+}
+
+func (service *eventSessionService) newSession(event events.Event) (*Session, error) {
+	sEvt := sessionEvent{}
+
+	if err := json.Unmarshal(event.Data(), &sEvt); err != nil {
+		return nil, err
+	}
+
+	if sEvt.EventType != "sessionAck" {
+		return nil, fmt.Errorf("Session event was expected")
+	}
+
+	s := Session{}
+
+	s.SessionID = sEvt.SessionID
+	s.SessionAckPacket = sEvt.SessionAckPacket
+	s.Disconnected = make(chan bool)
+	s.eventEmitter = service.eventEmitter
+
+	return &s, nil
 }

@@ -16,15 +16,17 @@ type Server interface {
 }
 
 // NewTCPServer creates a new Server that listen on an TCP port
-func NewTCPServer(address string, onConnectionHandler Handler) Server {
+func NewTCPServer(address string, ports map[string]string, onConnectionHandler Handler) Server {
 	return &tcpServer{
 		address,
+		ports,
 		onConnectionHandler,
 	}
 }
 
 type tcpServer struct {
 	addr    string
+	ports   map[string]string
 	handler Handler
 }
 
@@ -36,13 +38,25 @@ func (s *tcpServer) handleConnection(conn net.Conn) {
 }
 
 func (s *tcpServer) Listen() {
-	listen, err := net.Listen("tcp", s.addr)
+	exit := make(chan bool)
+
+	for port, _ := range s.ports {
+		go s.listenPort(port)
+	}
+
+	<-exit
+}
+
+func (s *tcpServer) listenPort(port string) {
+	listen, err := net.Listen("tcp", s.addr+":"+port)
+
+	defer listen.Close()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Printf("Server listenning at %s", s.addr)
+	log.Printf("Server listenning at %s", s.addr+":"+port)
 
 	for {
 		conn, err := listen.Accept()

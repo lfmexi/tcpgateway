@@ -2,7 +2,6 @@ package session
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 )
@@ -12,6 +11,7 @@ type Session struct {
 	SessionID        string
 	SessionAckPacket []byte
 	Disconnected     chan bool
+	eventEmitter     events.EventEmitter
 }
 
 type sessionEvent struct {
@@ -20,22 +20,6 @@ type sessionEvent struct {
 	SessionAckPacket json.RawMessage `json:"ack_packet"`
 }
 
-func newSession(event events.Event) (*Session, error) {
-	sEvt := sessionEvent{}
-
-	if err := json.Unmarshal(event.Data(), &sEvt); err != nil {
-		return nil, err
-	}
-
-	if sEvt.EventType != "sessionAck" {
-		return nil, fmt.Errorf("Session event was expected")
-	}
-
-	s := Session{}
-
-	s.SessionID = sEvt.SessionID
-	s.SessionAckPacket = sEvt.SessionAckPacket
-	s.Disconnected = make(chan bool)
-
-	return &s, nil
+func (s *Session) CloseSession() error {
+	return s.eventEmitter.Emit("logout."+s.SessionID, nil)
 }

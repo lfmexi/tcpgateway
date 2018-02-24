@@ -1,8 +1,6 @@
 package session
 
 import (
-	"encoding/json"
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -66,6 +64,7 @@ func Test_eventSessionService_CreateSession(t *testing.T) {
 				"123",
 				[]byte("{\"string\":\"a string\"}"),
 				make(chan bool),
+				&eventEmitterMock{},
 			},
 			false,
 		},
@@ -111,7 +110,7 @@ func Test_eventSessionService_CreateSession(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.s.CreateSession(tt.args.sessionAddress, tt.args.payload)
+			got, err := tt.s.CreateSession(tt.args.sessionAddress, "a-type", tt.args.payload)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("eventSessionService.CreateSession() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -126,92 +125,71 @@ func Test_eventSessionService_CreateSession(t *testing.T) {
 	}
 }
 
-func createChan() (chan events.Event, error) {
-	response := make(chan events.Event)
-
-	go func() {
-		response <- &eventMock{}
-	}()
-
-	return response, nil
-}
-
-type eventEmitterMock struct{}
-
-func (eventEmitterMock) Emit(string, []byte) error {
-	return nil
-}
-
-type failEventEmitterMock struct{}
-
-func (failEventEmitterMock) Emit(string, []byte) error {
-	return fmt.Errorf("An error ocurred")
-}
-
-type eventSubscriberFactoryMock struct{}
-
-func (eventSubscriberFactoryMock) CreateEventSubscriber() events.EventSubscriber {
-	return &eventSubscriberMock{}
-}
-
-type eventSubscriberMock struct{}
-
-func (eventSubscriberMock) Observe(...string) (<-chan events.Event, error) {
-	return createChan()
-}
-
-func (eventSubscriberMock) Stop() error {
-	return nil
-}
-
-type failureEventSubscriberFactoryMock struct {
-}
-
-func (failureEventSubscriberFactoryMock) CreateEventSubscriber() events.EventSubscriber {
-	return &failEventSubscriberMock{}
-}
-
-type failEventSubscriberMock struct{}
-
-func (failEventSubscriberMock) Observe(...string) (<-chan events.Event, error) {
-	return nil, fmt.Errorf("An unexpected error")
-}
-
-func (failEventSubscriberMock) Stop() error {
-	panic("not implemented")
-}
-
-type nonStopEventSubscriberFactoryMock struct {
-}
-
-func (nonStopEventSubscriberFactoryMock) CreateEventSubscriber() events.EventSubscriber {
-	return &nonStopEventSubscriber{}
-}
-
-type nonStopEventSubscriber struct{}
-
-func (nonStopEventSubscriber) Observe(...string) (<-chan events.Event, error) {
-	return createChan()
-}
-
-func (nonStopEventSubscriber) Stop() error {
-	return fmt.Errorf("An error ocurred")
-}
-
-type eventMock struct{}
-
-func (eventMock) Data() []byte {
-	type message struct {
-		EventName string          `json:"event_name"`
-		DeviceID  string          `json:"session_id"`
-		AckPacket json.RawMessage `json:"ack_packet"`
+func Test_newSession(t *testing.T) {
+	type args struct {
+		event events.Event
 	}
-
-	event, _ := json.Marshal(message{
-		"sessionAck",
-		"123",
-		[]byte("{\"string\":\"a string\"}"),
-	})
-
-	return event
+	tests := []struct {
+		name    string
+		s       eventSessionService
+		args    args
+		want    *Session
+		wantErr bool
+	}{
+		{
+			"It should create a valid session",
+			eventSessionService{
+				&eventEmitterMock{},
+				&eventSubscriberFactoryMock{},
+			},
+			args{
+				&eventMock{},
+			},
+			&Session{
+				"123",
+				[]byte("{\"string\":\"a string\"}"),
+				make(chan bool),
+				&eventEmitterMock{},
+			},
+			false,
+		},
+		{
+			"It should not create a valid session due to an empty json",
+			eventSessionService{
+				&eventEmitterMock{},
+				&eventSubscriberFactoryMock{},
+			},
+			args{
+				&badEventMock{},
+			},
+			nil,
+			true,
+		},
+		{
+			"It should not create a valid session due to a wrong event type",
+			eventSessionService{
+				&eventEmitterMock{},
+				&eventSubscriberFactoryMock{},
+			},
+			args{
+				&wrongTypeOfEventMock{},
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.s.newSession(tt.args.event)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("newSession() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != nil && tt.want != nil {
+				if !reflect.DeepEqual(got.SessionID, tt.want.SessionID) || !reflect.DeepEqual(got.SessionAckPacket, tt.want.SessionAckPacket) {
+					t.Errorf("eventSessionService.CreateSession() = %v, want %v", got, tt.want)
+				}
+			}
+		})
+	}
 }

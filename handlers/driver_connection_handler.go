@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"bufio"
+	"fmt"
 	"net"
+	"strings"
 
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 	"bitbucket.org/challengerdevs/gpsdriver/publisher"
@@ -13,8 +15,9 @@ import (
 )
 
 // NewConnectionHandler creates a new driver connection handler
-func NewConnectionHandler(ss session.Service, publisher publisher.Service, evSubFactory events.EventSubscriberFactory, rsf readers.ReaderServiceFactory, wsf writers.WriterServiceFactory) server.Handler {
+func NewConnectionHandler(portsMap map[string]string, ss session.Service, publisher publisher.Service, evSubFactory events.EventSubscriberFactory, rsf readers.ReaderServiceFactory, wsf writers.WriterServiceFactory) server.Handler {
 	return &driverConnectionHandler{
+		portsMap,
 		ss,
 		publisher,
 		evSubFactory,
@@ -24,6 +27,7 @@ func NewConnectionHandler(ss session.Service, publisher publisher.Service, evSub
 }
 
 type driverConnectionHandler struct {
+	portsMap               map[string]string
 	sessionService         session.Service
 	publisherService       publisher.Service
 	eventSubscriberFactory events.EventSubscriberFactory
@@ -33,6 +37,12 @@ type driverConnectionHandler struct {
 
 func (c *driverConnectionHandler) ServeConnection(conn net.Conn) error {
 	defer conn.Close()
+
+	deviceType, err := c.getDeviceTypeFromConn(conn)
+
+	if err != nil {
+		return err
+	}
 
 	reader := bufio.NewReader(conn)
 	writer := bufio.NewWriter(conn)
@@ -46,7 +56,7 @@ func (c *driverConnectionHandler) ServeConnection(conn net.Conn) error {
 		return err
 	}
 
-	session, err := c.sessionService.CreateSession(conn.RemoteAddr().String(), data)
+	session, err := c.sessionService.CreateSession(conn.RemoteAddr().String(), deviceType, data)
 
 	if err != nil {
 		return err
@@ -58,16 +68,23 @@ func (c *driverConnectionHandler) ServeConnection(conn net.Conn) error {
 		}
 	}()
 
-	if session.SessionAckPacket != nil {
-		if err := writerService.WriteSinglePacket(session.SessionAckPacket); err != nil {
-			return err
-		}
-	}
-
 	subscriber := c.eventSubscriberFactory.CreateEventSubscriber()
 
 	// This must launch a goroutine
 	writerService.WriteOnEventSubscriber(session, subscriber)
 
 	return readerService.ReadTraces(session)
+}
+
+func (c *driverConnectionHandler) getDeviceTypeFromConn(conn net.Conn) (string, error) {
+	address := conn.LocalAddr().String()
+	addressParts := strings.Split(address, ":")
+
+	port := addressParts[1]
+
+	if deviceType, ok := c.portsMap[port]; ok {
+		return deviceType, nil
+	}
+
+	return "", fmt.Errorf("Not a valid port %s", port)
 }

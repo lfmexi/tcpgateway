@@ -57,7 +57,12 @@ func (a *asyncWriterService) WriteOnEventSubscriber(s *session.Session, es event
 				}
 			case <-s.Disconnected:
 				{
-					log.Printf("Closing connection for device %s, no more events listened", s.SessionID)
+					log.Printf("Closing connection for session %s, no more events listened", s.SessionID)
+
+					if err := s.CloseSession(); err != nil {
+						log.Println(err)
+					}
+
 					es.Stop()
 					break loop
 				}
