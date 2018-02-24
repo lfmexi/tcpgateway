@@ -50,7 +50,7 @@ func (s eventSessionService) CreateSession(sessionAddress string, deviceType str
 	return s.newSession(sessionAckEvent)
 }
 
-func (service *eventSessionService) newSession(event events.Event) (*Session, error) {
+func (s *eventSessionService) newSession(event events.Event) (*Session, error) {
 	sEvt := sessionEvent{}
 
 	if err := json.Unmarshal(event.Data(), &sEvt); err != nil {
@@ -61,12 +61,12 @@ func (service *eventSessionService) newSession(event events.Event) (*Session, er
 		return nil, fmt.Errorf("Session event was expected")
 	}
 
-	s := Session{}
+	session := Session{}
 
-	s.SessionID = sEvt.SessionID
-	s.SessionAckPacket = sEvt.SessionAckPacket
-	s.Disconnected = make(chan bool)
-	s.eventEmitter = service.eventEmitter
+	session.SessionID = sEvt.SessionID
+	session.SessionAckPacket = sEvt.SessionAckPacket
+	session.Disconnected = make(chan bool)
+	session.eventEmitter = s.eventEmitter
 
-	return &s, nil
+	return &session, nil
 }

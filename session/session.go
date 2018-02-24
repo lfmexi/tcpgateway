@@ -20,6 +20,7 @@ type sessionEvent struct {
 	SessionAckPacket json.RawMessage `json:"ack_packet"`
 }
 
+// CloseSession sends a logout event for closing a session
 func (s *Session) CloseSession() error {
 	return s.eventEmitter.Emit("logout."+s.SessionID, nil)
 }
