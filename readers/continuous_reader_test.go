@@ -63,46 +63,6 @@ func Test_continuousReaderServiceFactory_CreateReaderService(t *testing.T) {
 	}
 }
 
-func Test_continuousReaderService_ReadFirstLine(t *testing.T) {
-	tests := []struct {
-		name    string
-		c       *continuousReaderService
-		want    []byte
-		wantErr bool
-	}{
-		{
-			"It should read the first line of a buffered reader and publish an event",
-			&continuousReaderService{
-				createReaderFromString("a string"),
-				&publisherServiceMock{},
-			},
-			[]byte("a string"),
-			false,
-		},
-		{
-			"It should read the first line of an empty buffer, sending an error",
-			&continuousReaderService{
-				&bufio.Reader{},
-				&publisherServiceMock{},
-			},
-			nil,
-			true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.c.ReadFirstLine()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("continuousReaderService.ReadFirstLine() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("continuousReaderService.ReadFirstLine() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func Test_continuousReaderService_ReadTraces(t *testing.T) {
 	type args struct {
 		s *session.Session

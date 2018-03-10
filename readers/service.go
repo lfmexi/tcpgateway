@@ -10,7 +10,6 @@ import (
 
 // ReaderService interface that represents a reader service
 type ReaderService interface {
-	ReadFirstLine() ([]byte, error)
 	ReadTraces(*session.Session) error
 }
 

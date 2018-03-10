@@ -9,8 +9,6 @@ import (
 	"bitbucket.org/challengerdevs/gpsdriver/writers"
 )
 
-var host = "0.0.0.0"
-
 func readerServiceFactory() readers.ReaderServiceFactory {
 	return readers.NewContinuousReaderServiceFactory()
 }
@@ -26,10 +24,10 @@ func handler() server.Handler {
 // ConfigureServer creates a new tcp server with a configured connection handler
 func ConfigureServer() server.Server {
 	if envhost := os.Getenv("SERVER_HOST"); envhost != "" {
-		host = envhost
+		configuration.Server.Host = envhost
 	}
 
 	connectionHandler := handler()
 
-	return server.NewTCPServer(host, portsDeviceTypeMap, connectionHandler)
+	return server.NewTCPServer(configuration.Server.Host, portsDeviceTypeMap, connectionHandler)
 }

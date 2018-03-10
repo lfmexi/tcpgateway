@@ -1,0 +1,12 @@
+[server]
+  host = "0.0.0.0"
+
+[kafka_consumers]
+  [kafka_consumers.responses]
+    broker = "kafka1"
+    "group.id" = "driver.responses"
+    "auto.offset.reset" = "earliest"
+
+[kafka_producers]
+  [kafka_producers.packets]
+    broker = "kafka1"

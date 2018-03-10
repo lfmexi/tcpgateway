@@ -7,16 +7,18 @@ import (
 )
 
 func packetKafkaConsumerConfig() *kafka.ConfigMap {
+	responsesConfig := configuration.KafkaConsumers["responses"]
 	return &kafka.ConfigMap{
-		"bootstrap.servers": "broker",
-		"group.id":          "driver.responses",
-		"auto.offset.reset": "earliest",
+		"bootstrap.servers": responsesConfig.Broker,
+		"group.id":          responsesConfig.GroupID,
+		"auto.offset.reset": responsesConfig.AutoOffsetReset,
 	}
 }
 
 func packetKafkaProducerConfig() *kafka.ConfigMap {
+	packetsConfig := configuration.KafkaProducers["packets"]
 	return &kafka.ConfigMap{
-		"bootstrap.servers": "broker",
+		"bootstrap.servers": packetsConfig.Broker,
 	}
 }
 
