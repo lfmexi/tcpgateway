@@ -2,14 +2,14 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/streadway/amqp"
-  packages = ["."]
-  revision = "fc7fda2371f5327ad39211e09482845b8734cc72"
+  name = "github.com/confluentinc/confluent-kafka-go"
+  packages = ["kafka"]
+  revision = "f696f02dcbb04d95b103c5b848bb15f749a996f7"
+  version = "v0.11.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "baf1c9c4dc07eee188ef16d427c2c10c42e4ffee29207fadb3de0a731a104f9d"
+  inputs-digest = "cdc1daa1008339a3e5c4103d6a39fb683fe193c9a32a527f82c83d953e825fa0"
   solver-name = "gps-cdcl"
   solver-version = 1

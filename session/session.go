@@ -1,26 +1,24 @@
 package session
 
 import (
-	"encoding/json"
+	"fmt"
 
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 )
 
 // Session represents an initialized session
 type Session struct {
-	SessionID        string
-	SessionAckPacket []byte
-	Disconnected     chan bool
-	eventEmitter     events.EventEmitter
+	SessionID    string
+	Disconnected chan bool
+	eventEmitter events.EventEmitter
 }
 
 type sessionEvent struct {
-	EventType        string          `json:"event_name"`
-	SessionID        string          `json:"session_id"`
-	SessionAckPacket json.RawMessage `json:"ack_packet"`
+	EventType string `json:"event_type"`
+	SessionID string `json:"session_id"`
 }
 
 // CloseSession sends a logout event for closing a session
 func (s *Session) CloseSession() error {
-	return s.eventEmitter.Emit("logout."+s.SessionID, nil)
+	return s.eventEmitter.Emit("devices.logout", []byte(fmt.Sprintf("{\"id\":\"%s\"}", s.SessionID)))
 }

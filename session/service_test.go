@@ -41,7 +41,6 @@ func TestNewEventSessionService(t *testing.T) {
 func Test_eventSessionService_CreateSession(t *testing.T) {
 	type args struct {
 		sessionAddress string
-		payload        []byte
 	}
 	tests := []struct {
 		name    string
@@ -58,11 +57,9 @@ func Test_eventSessionService_CreateSession(t *testing.T) {
 			},
 			args{
 				"1.1.1.1",
-				[]byte("login"),
 			},
 			&Session{
 				"123",
-				[]byte("{\"string\":\"a string\"}"),
 				make(chan bool),
 				&eventEmitterMock{},
 			},
@@ -76,7 +73,6 @@ func Test_eventSessionService_CreateSession(t *testing.T) {
 			},
 			args{
 				"1.1.1.1",
-				[]byte("login"),
 			},
 			nil,
 			true,
@@ -89,7 +85,6 @@ func Test_eventSessionService_CreateSession(t *testing.T) {
 			},
 			args{
 				"1.1.1.1",
-				[]byte("login"),
 			},
 			nil,
 			true,
@@ -102,7 +97,6 @@ func Test_eventSessionService_CreateSession(t *testing.T) {
 			},
 			args{
 				"1.1.1.1",
-				[]byte("login"),
 			},
 			nil,
 			true,
@@ -110,14 +104,14 @@ func Test_eventSessionService_CreateSession(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.s.CreateSession(tt.args.sessionAddress, "a-type", tt.args.payload)
+			got, err := tt.s.CreateSession(tt.args.sessionAddress, "a-type")
 			if (err != nil) != tt.wantErr {
 				t.Errorf("eventSessionService.CreateSession() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if got != nil && tt.want != nil {
-				if !reflect.DeepEqual(got.SessionID, tt.want.SessionID) || !reflect.DeepEqual(got.SessionAckPacket, tt.want.SessionAckPacket) {
+				if !reflect.DeepEqual(got.SessionID, tt.want.SessionID) {
 					t.Errorf("eventSessionService.CreateSession() = %v, want %v", got, tt.want)
 				}
 			}
@@ -147,7 +141,6 @@ func Test_newSession(t *testing.T) {
 			},
 			&Session{
 				"123",
-				[]byte("{\"string\":\"a string\"}"),
 				make(chan bool),
 				&eventEmitterMock{},
 			},
@@ -186,7 +179,7 @@ func Test_newSession(t *testing.T) {
 				return
 			}
 			if got != nil && tt.want != nil {
-				if !reflect.DeepEqual(got.SessionID, tt.want.SessionID) || !reflect.DeepEqual(got.SessionAckPacket, tt.want.SessionAckPacket) {
+				if !reflect.DeepEqual(got.SessionID, tt.want.SessionID) {
 					t.Errorf("eventSessionService.CreateSession() = %v, want %v", got, tt.want)
 				}
 			}

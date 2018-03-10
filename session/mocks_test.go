@@ -73,15 +73,13 @@ type eventMock struct{}
 
 func (eventMock) Data() []byte {
 	type message struct {
-		EventName string          `json:"event_name"`
-		DeviceID  string          `json:"session_id"`
-		AckPacket json.RawMessage `json:"ack_packet"`
+		EventName string `json:"event_type"`
+		DeviceID  string `json:"session_id"`
 	}
 
 	event, _ := json.Marshal(message{
 		"sessionAck",
 		"123",
-		[]byte("{\"string\":\"a string\"}"),
 	})
 
 	return event
@@ -98,15 +96,13 @@ type wrongTypeOfEventMock struct {
 
 func (wrongTypeOfEventMock) Data() []byte {
 	type message struct {
-		EventName string          `json:"event_name"`
-		DeviceID  string          `json:"session_id"`
-		AckPacket json.RawMessage `json:"ack_packet"`
+		EventName string `json:"event_type"`
+		DeviceID  string `json:"session_id"`
 	}
 
 	event, _ := json.Marshal(message{
 		"anotherMessage",
 		"123",
-		[]byte("{\"string\":\"a string\"}"),
 	})
 
 	return event

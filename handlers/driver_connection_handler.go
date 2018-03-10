@@ -50,13 +50,7 @@ func (c *driverConnectionHandler) ServeConnection(conn net.Conn) error {
 	readerService := c.readerServiceFactory.CreateReaderService(reader, c.publisherService)
 	writerService := c.writerServiceFactory.CreateWriterService(writer)
 
-	data, err := readerService.ReadFirstLine()
-
-	if err != nil {
-		return err
-	}
-
-	session, err := c.sessionService.CreateSession(conn.RemoteAddr().String(), deviceType, data)
+	session, err := c.sessionService.CreateSession(conn.RemoteAddr().String(), deviceType)
 
 	if err != nil {
 		return err

@@ -12,7 +12,6 @@ func TestSession_CloseSession(t *testing.T) {
 			"It should close the session",
 			&Session{
 				"id123",
-				nil,
 				make(chan bool),
 				&eventEmitterMock{},
 			},

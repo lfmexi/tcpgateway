@@ -10,7 +10,7 @@ import (
 
 // Service interface that represents the session service
 type Service interface {
-	CreateSession(string, string, []byte) (*Session, error)
+	CreateSession(string, string) (*Session, error)
 }
 
 // NewEventSessionService creates a new event based session service
@@ -26,7 +26,7 @@ type eventSessionService struct {
 	eventSubscriberFactory events.EventSubscriberFactory
 }
 
-func (s eventSessionService) CreateSession(sessionAddress string, deviceType string, payload []byte) (*Session, error) {
+func (s eventSessionService) CreateSession(sessionAddress string, deviceType string) (*Session, error) {
 	eventObserver := s.eventSubscriberFactory.CreateEventSubscriber()
 
 	eventChannel, err := eventObserver.Observe(sessionAddress)
@@ -35,7 +35,7 @@ func (s eventSessionService) CreateSession(sessionAddress string, deviceType str
 		return nil, err
 	}
 
-	if err := s.eventEmitter.Emit("login."+deviceType, payload); err != nil {
+	if err := s.eventEmitter.Emit("devices.login", []byte(fmt.Sprintf("{\"device_type\":\"%s\", \"address\":\"%s\"}", deviceType, sessionAddress))); err != nil {
 		return nil, err
 	}
 
@@ -64,7 +64,6 @@ func (s *eventSessionService) newSession(event events.Event) (*Session, error) {
 	session := Session{}
 
 	session.SessionID = sEvt.SessionID
-	session.SessionAckPacket = sEvt.SessionAckPacket
 	session.Disconnected = make(chan bool)
 	session.eventEmitter = s.eventEmitter
 
