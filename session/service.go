@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"bitbucket.org/challengerdevs/gpsdriver/events"
 )
@@ -35,19 +36,32 @@ func (s eventSessionService) CreateSession(sessionAddress string, deviceType str
 		return nil, err
 	}
 
-	if err := s.eventEmitter.Emit("devices.login", []byte(fmt.Sprintf("{\"device_type\":\"%s\", \"address\":\"%s\"}", deviceType, sessionAddress))); err != nil {
+	if err := s.eventEmitter.Emit("devices.login", sessionAddress, []byte(fmt.Sprintf("{\"device_type\":\"%s\", \"address\":\"%s\"}", deviceType, sessionAddress))); err != nil {
 		return nil, err
 	}
 
-	sessionAckEvent := <-eventChannel
+	timeoutChan := make(chan bool)
 
-	log.Printf("Session established for %s", sessionAddress)
+	go func() {
+		time.Sleep(30 * time.Second)
+		timeoutChan <- true
+	}()
 
-	if err := eventObserver.Stop(); err != nil {
-		return nil, err
+	err = nil
+	select {
+	case sessionAckEvent := <-eventChannel:
+		log.Printf("Session established for %s", sessionAddress)
+
+		if err := eventObserver.Stop(); err != nil {
+			return nil, err
+		}
+
+		return s.newSession(sessionAckEvent)
+	case <-timeoutChan:
+		err = fmt.Errorf("Timeout exceeded while wating to establish the session for %s", sessionAddress)
 	}
 
-	return s.newSession(sessionAckEvent)
+	return nil, err
 }
 
 func (s *eventSessionService) newSession(event events.Event) (*Session, error) {

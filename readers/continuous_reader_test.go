@@ -147,7 +147,7 @@ func Test_continuousReaderService_ReadTraces(t *testing.T) {
 
 type publisherServiceMock struct{}
 
-func (publisherServiceMock) Publish(key string, message []byte) error {
+func (publisherServiceMock) Publish(string, key string, message []byte) error {
 	log.Printf("message retrieved: %s", message)
 	return nil
 }

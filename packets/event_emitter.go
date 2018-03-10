@@ -15,6 +15,6 @@ type packetEventEmitter struct {
 	source events.EventSource
 }
 
-func (p *packetEventEmitter) Emit(key string, data []byte) error {
-	return p.source.Publish(key, data)
+func (p *packetEventEmitter) Emit(destination string, key string, data []byte) error {
+	return p.source.Publish(destination, key, data)
 }

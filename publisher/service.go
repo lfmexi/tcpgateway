@@ -6,7 +6,7 @@ import (
 
 // Service interface that represents a publisher service
 type Service interface {
-	Publish(string, []byte) error
+	Publish(string, string, []byte) error
 }
 
 // NewEventPublisherService creates a new event publisher service
@@ -20,6 +20,6 @@ type eventPublisherService struct {
 	traceEventEmitter events.EventEmitter
 }
 
-func (es eventPublisherService) Publish(sessionID string, data []byte) error {
-	return es.traceEventEmitter.Emit(sessionID, data)
+func (es eventPublisherService) Publish(destination string, sessionID string, data []byte) error {
+	return es.traceEventEmitter.Emit(destination, sessionID, data)
 }

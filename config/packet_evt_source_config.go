@@ -8,7 +8,7 @@ import (
 
 func packetKafkaConsumerConfig() *kafka.ConfigMap {
 	return &kafka.ConfigMap{
-		"bootstrap.servers": "kafka1",
+		"bootstrap.servers": "broker",
 		"group.id":          "driver.responses",
 		"auto.offset.reset": "earliest",
 	}
@@ -16,7 +16,7 @@ func packetKafkaConsumerConfig() *kafka.ConfigMap {
 
 func packetKafkaProducerConfig() *kafka.ConfigMap {
 	return &kafka.ConfigMap{
-		"bootstrap.servers": "kafka1",
+		"bootstrap.servers": "broker",
 	}
 }
 

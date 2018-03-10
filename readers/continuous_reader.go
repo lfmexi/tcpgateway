@@ -54,7 +54,7 @@ func (c *continuousReaderService) ReadTraces(s *session.Session) error {
 		}
 
 		if len(line) > 0 {
-			c.publisherService.Publish(s.SessionID, line)
+			c.publisherService.Publish("packets", s.SessionID, line)
 		}
 	}
 }

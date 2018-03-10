@@ -20,5 +20,5 @@ type sessionEvent struct {
 
 // CloseSession sends a logout event for closing a session
 func (s *Session) CloseSession() error {
-	return s.eventEmitter.Emit("devices.logout", []byte(fmt.Sprintf("{\"id\":\"%s\"}", s.SessionID)))
+	return s.eventEmitter.Emit("devices.logout", "", []byte(fmt.Sprintf("{\"id\":\"%s\"}", s.SessionID)))
 }

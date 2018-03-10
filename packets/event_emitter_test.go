@@ -61,7 +61,7 @@ func Test_packetEventEmitter_Emit(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.p.Emit(tt.args.key, tt.args.data); (err != nil) != tt.wantErr {
+			if err := tt.p.Emit("", tt.args.key, tt.args.data); (err != nil) != tt.wantErr {
 				t.Errorf("packetEventEmitter.Emit() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -70,7 +70,7 @@ func Test_packetEventEmitter_Emit(t *testing.T) {
 
 type eventSourceMock struct{}
 
-func (eventSourceMock) Publish(key string, data []byte) error {
+func (eventSourceMock) Publish(string, key string, data []byte) error {
 	return nil
 }
 
@@ -84,7 +84,7 @@ func (eventSourceMock) Stop(key string) error {
 
 type publishErrorEventSource struct{}
 
-func (publishErrorEventSource) Publish(key string, data []byte) error {
+func (publishErrorEventSource) Publish(string, key string, data []byte) error {
 	return fmt.Errorf("An error publishing the message %s", data)
 }
 

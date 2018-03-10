@@ -9,13 +9,13 @@ import (
 
 type eventEmitterMock struct{}
 
-func (eventEmitterMock) Emit(string, []byte) error {
+func (eventEmitterMock) Emit(string, string, []byte) error {
 	return nil
 }
 
 type failEventEmitterMock struct{}
 
-func (failEventEmitterMock) Emit(string, []byte) error {
+func (failEventEmitterMock) Emit(string, string, []byte) error {
 	return fmt.Errorf("An error ocurred")
 }
 

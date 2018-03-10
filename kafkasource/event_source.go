@@ -23,7 +23,7 @@ func CreateKafkaEventSource(consumerConfig *kafka.ConfigMap, producerConfig *kaf
 	}
 }
 
-func (es *kafkaEventsouce) Publish(key string, data []byte) error {
+func (es *kafkaEventsouce) Publish(destination string, key string, data []byte) error {
 	producer, err := kafka.NewProducer(es.producerConfig)
 
 	if err != nil {
@@ -37,8 +37,12 @@ func (es *kafkaEventsouce) Publish(key string, data []byte) error {
 	}()
 
 	err = producer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: &key, Partition: kafka.PartitionAny},
-		Value:          data,
+		TopicPartition: kafka.TopicPartition{
+			Topic:     &destination,
+			Partition: kafka.PartitionAny,
+		},
+		Key:   []byte(key),
+		Value: data,
 	}, deliveryChannel)
 
 	e := <-deliveryChannel
