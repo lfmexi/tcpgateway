@@ -6,13 +6,20 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-func packetKafkaConsumerConfig() *kafka.ConfigMap {
+func packetKafkaConsumerConfig() kafkasource.CreateKafkaConsumer {
 	responsesConfig := configuration.KafkaConsumers["responses"]
-	return &kafka.ConfigMap{
-		"bootstrap.servers": responsesConfig.Broker,
-		"group.id":          responsesConfig.GroupID,
-		"auto.offset.reset": responsesConfig.AutoOffsetReset,
+	configMap := &kafka.ConfigMap{
+		"bootstrap.servers":        responsesConfig.Broker,
+		"go.events.channel.enable": true,
+		"default.topic.config":     kafka.ConfigMap{"auto.offset.reset": responsesConfig.AutoOffsetReset},
 	}
+
+	factory := func(groupID string) (kafkasource.KafkaConsumer, error) {
+		configMap.SetKey("group.id", groupID)
+		return kafka.NewConsumer(configMap)
+	}
+
+	return factory
 }
 
 func packetKafkaProducerConfig() *kafka.ConfigMap {
@@ -26,7 +33,13 @@ var packetEvtSource events.EventSource
 
 func packetEventSource() events.EventSource {
 	if packetEvtSource == nil {
-		packetEvtSource = kafkasource.CreateKafkaEventSource(packetKafkaConsumerConfig(), packetKafkaProducerConfig())
+		producer, err := kafka.NewProducer(packetKafkaProducerConfig())
+
+		if err != nil {
+			panic(err)
+		}
+
+		packetEvtSource = kafkasource.CreateKafkaEventSource(packetKafkaConsumerConfig(), producer)
 	}
 
 	return packetEvtSource

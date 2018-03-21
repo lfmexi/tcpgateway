@@ -1,12 +1,16 @@
 [server]
   host = "0.0.0.0"
 
+[database]
+  host = "mongo1"
+  name = "sessions"
+
 [kafka_consumers]
   [kafka_consumers.responses]
-    broker = "kafka1"
+    broker = "kafka1:19092,kafka2:29092,kafka3:39092"
     "group.id" = "driver.responses"
     "auto.offset.reset" = "earliest"
 
 [kafka_producers]
   [kafka_producers.packets]
-    broker = "kafka1"
+    broker = "kafka1:19092,kafka2:29092,kafka3:39092"

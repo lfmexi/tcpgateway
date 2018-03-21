@@ -4,8 +4,14 @@ import "github.com/BurntSushi/toml"
 
 type configProperties struct {
 	Server         serverProperties
+	Database       databaseProperties
 	KafkaConsumers map[string]consumerProperties `toml:"kafka_consumers"`
 	KafkaProducers map[string]producerProperties `toml:"kafka_producers"`
+}
+
+type databaseProperties struct {
+	Name string
+	Host string
 }
 
 type serverProperties struct {

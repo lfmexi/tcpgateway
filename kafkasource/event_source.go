@@ -9,41 +9,37 @@ import (
 )
 
 type kafkaEventsouce struct {
-	consumerConfig   *kafka.ConfigMap
-	producerConfig   *kafka.ConfigMap
+	createConsumer   CreateKafkaConsumer
+	producer         KafkaProducer
 	consumersControl map[string]chan bool
 }
 
 // CreateKafkaEventSource creates an EventSource for kafka
-func CreateKafkaEventSource(consumerConfig *kafka.ConfigMap, producerConfig *kafka.ConfigMap) events.EventSource {
+func CreateKafkaEventSource(createConsumer CreateKafkaConsumer, producer KafkaProducer) events.EventSource {
 	return &kafkaEventsouce{
-		consumerConfig,
-		producerConfig,
+		createConsumer,
+		producer,
 		make(map[string]chan bool),
 	}
 }
 
 func (es *kafkaEventsouce) Publish(destination string, key string, data []byte) error {
-	producer, err := kafka.NewProducer(es.producerConfig)
-
-	if err != nil {
-		return err
-	}
-
 	deliveryChannel := make(chan kafka.Event)
 
 	defer func() {
 		close(deliveryChannel)
 	}()
 
-	err = producer.Produce(&kafka.Message{
+	kafkaMessage := &kafka.Message{
 		TopicPartition: kafka.TopicPartition{
 			Topic:     &destination,
 			Partition: kafka.PartitionAny,
 		},
 		Key:   []byte(key),
 		Value: data,
-	}, deliveryChannel)
+	}
+
+	err := es.producer.Produce(kafkaMessage, deliveryChannel)
 
 	e := <-deliveryChannel
 	m := e.(*kafka.Message)
@@ -52,11 +48,11 @@ func (es *kafkaEventsouce) Publish(destination string, key string, data []byte) 
 		return m.TopicPartition.Error
 	}
 
-	return nil
+	return err
 }
 
 func (es *kafkaEventsouce) Consume(key string) (<-chan events.Event, error) {
-	consumer, err := kafka.NewConsumer(es.consumerConfig)
+	consumer, err := es.createConsumer(key)
 
 	if err != nil {
 		return nil, err
@@ -68,37 +64,36 @@ func (es *kafkaEventsouce) Consume(key string) (<-chan events.Event, error) {
 
 	es.consumersControl[key] = stopChannel
 
-	eventChannel := make(chan events.Event)
+	eventChannel := make(chan events.Event, 10)
 
 	go func() {
 	loop:
 		for {
 			select {
 			case <-stopChannel:
-				consumer.Close()
-				close(eventChannel)
 				break loop
-			default:
-				event := consumer.Poll(100)
-
-				if event == nil {
-					continue
-				}
-
-				switch e := event.(type) {
+			case ev := <-consumer.Events():
+				switch e := ev.(type) {
+				case kafka.AssignedPartitions:
+					fmt.Fprintf(os.Stderr, "%% %v\n", e)
+					consumer.Assign(e.Partitions)
+				case kafka.RevokedPartitions:
+					fmt.Fprintf(os.Stderr, "%% %v\n", e)
+					consumer.Unassign()
 				case *kafka.Message:
-					fmt.Printf("%% Message on %s\n", e.TopicPartition)
 					eventChannel <- &kafkaEvent{e.Value}
 				case kafka.PartitionEOF:
 					fmt.Printf("%% Reached %v\n", e)
 				case kafka.Error:
 					fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
-					stopChannel <- true
-				default:
-					fmt.Printf("Ignored %v\n", e)
+					es.Stop(key)
 				}
 			}
 		}
+
+		consumer.Close()
+		close(stopChannel)
+		close(eventChannel)
 	}()
 
 	return eventChannel, nil
@@ -111,7 +106,7 @@ func (es *kafkaEventsouce) Stop(key string) error {
 		return fmt.Errorf("Consumer %s does not exist", key)
 	}
 
-	close(consumerControl)
+	consumerControl <- true
 
 	delete(es.consumersControl, key)
 	return nil
