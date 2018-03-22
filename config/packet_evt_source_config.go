@@ -4,7 +4,22 @@ import (
 	"bitbucket.org/challengerdevs/tcpgateway/events"
 	"bitbucket.org/challengerdevs/tcpgateway/kafkasource"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/jinzhu/copier"
 )
+
+func createConsumerFactory(consumerConfig *kafka.ConfigMap) kafkasource.CreateKafkaConsumer {
+	return func(groupID string) (kafkasource.KafkaConsumer, error) {
+		var config kafka.ConfigMap
+
+		groupIDConfig := kafka.ConfigMap{
+			"group.id": groupID,
+		}
+
+		copier.Copy(&config, consumerConfig)
+		copier.Copy(&config, &groupIDConfig)
+		return kafka.NewConsumer(&config)
+	}
+}
 
 func packetKafkaConsumerConfig() kafkasource.CreateKafkaConsumer {
 	responsesConfig := configuration.KafkaConsumers["responses"]
@@ -14,12 +29,7 @@ func packetKafkaConsumerConfig() kafkasource.CreateKafkaConsumer {
 		"default.topic.config":     kafka.ConfigMap{"auto.offset.reset": responsesConfig.AutoOffsetReset},
 	}
 
-	factory := func(groupID string) (kafkasource.KafkaConsumer, error) {
-		configMap.SetKey("group.id", groupID)
-		return kafka.NewConsumer(configMap)
-	}
-
-	return factory
+	return createConsumerFactory(configMap)
 }
 
 func packetKafkaProducerConfig() *kafka.ConfigMap {

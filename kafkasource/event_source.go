@@ -9,9 +9,11 @@ import (
 )
 
 type kafkaEventsouce struct {
-	createConsumer   CreateKafkaConsumer
-	producer         KafkaProducer
-	consumersControl map[string]chan bool
+	createConsumer       CreateKafkaConsumer
+	producer             KafkaProducer
+	incomingConsumers    chan string
+	consumersControlChan chan string
+	consumersControl     map[string]chan bool
 }
 
 // CreateKafkaEventSource creates an EventSource for kafka
@@ -19,6 +21,8 @@ func CreateKafkaEventSource(createConsumer CreateKafkaConsumer, producer KafkaPr
 	return &kafkaEventsouce{
 		createConsumer,
 		producer,
+		make(chan string),
+		make(chan string),
 		make(map[string]chan bool),
 	}
 }
@@ -60,16 +64,26 @@ func (es *kafkaEventsouce) Consume(key string) (<-chan events.Event, error) {
 
 	consumer.SubscribeTopics([]string{key}, nil)
 
-	stopChannel := make(chan bool)
-
-	es.consumersControl[key] = stopChannel
-
 	eventChannel := make(chan events.Event, 10)
 
 	go func() {
+		stopChannel := make(chan bool)
+
 	loop:
+
 		for {
 			select {
+			case consumerKey := <-es.consumersControlChan:
+				consumerControl, ok := es.consumersControl[consumerKey]
+
+				if !ok {
+					return
+				}
+
+				delete(es.consumersControl, key)
+				close(consumerControl)
+			case consumerKey := <-es.incomingConsumers:
+				es.consumersControl[consumerKey] = stopChannel
 			case <-stopChannel:
 				break loop
 			case ev := <-consumer.Events():

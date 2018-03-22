@@ -14,6 +14,12 @@
   version = "v0.11.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jinzhu/copier"
+  packages = ["."]
+  revision = "7e38e58719c33e0d44d585c4ab477a30f8cb82dd"
+
+[[projects]]
   branch = "v2"
   name = "gopkg.in/mgo.v2"
   packages = [
@@ -28,6 +34,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a414d3bc983bbc970629be7c1423c6d2ff9903f0d0e18f9935b268f93c3f8b08"
+  inputs-digest = "1fc7034db3a4560f814179f7da1d013abd6449db2636f3673ce19839664fed85"
   solver-name = "gps-cdcl"
   solver-version = 1
