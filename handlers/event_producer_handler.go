@@ -16,7 +16,7 @@ import (
 
 // NewConnectionHandler creates a new driver connection handler
 func NewConnectionHandler(portsMap map[string]string, ss session.Service, publisher publisher.Service, evSubFactory events.EventSubscriberFactory) server.Handler {
-	return &connectionHandler{
+	return &eventProducerHandler{
 		portsMap,
 		ss,
 		publisher,
@@ -24,14 +24,14 @@ func NewConnectionHandler(portsMap map[string]string, ss session.Service, publis
 	}
 }
 
-type connectionHandler struct {
+type eventProducerHandler struct {
 	portsMap               map[string]string
 	sessionService         session.Service
 	publisherService       publisher.Service
 	eventSubscriberFactory events.EventSubscriberFactory
 }
 
-func (c *connectionHandler) CreateSession(conn net.Conn, stopWaitGroup *sync.WaitGroup) (chan bool, string, error) {
+func (c *eventProducerHandler) CreateSession(conn net.Conn, stopWaitGroup *sync.WaitGroup) (chan bool, string, error) {
 	deviceType, err := c.getDeviceTypeFromConn(conn)
 
 	if err != nil {
@@ -81,7 +81,7 @@ func (c *connectionHandler) CreateSession(conn net.Conn, stopWaitGroup *sync.Wai
 	return stopChannel, sess.ID.Hex(), nil
 }
 
-func (c *connectionHandler) ServeConnection(conn net.Conn, sessionID string) error {
+func (c *eventProducerHandler) ServeConnection(conn net.Conn, sessionID string) error {
 	reader := bufio.NewReader(conn)
 
 	line, _, err := reader.ReadLine()
@@ -98,7 +98,7 @@ func (c *connectionHandler) ServeConnection(conn net.Conn, sessionID string) err
 	return nil
 }
 
-func (c *connectionHandler) getDeviceTypeFromConn(conn net.Conn) (string, error) {
+func (c *eventProducerHandler) getDeviceTypeFromConn(conn net.Conn) (string, error) {
 	address := conn.LocalAddr().String()
 	addressParts := strings.Split(address, ":")
 
