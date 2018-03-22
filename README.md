@@ -6,3 +6,4 @@ Build: [![CircleCI](https://circleci.com/bb/challengerdevs/tcpgateway.svg?style=
 # Requirements
 
 - go 1.10
+- [librdkafka](https://github.com/edenhill/librdkafka)
