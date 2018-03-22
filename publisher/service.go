@@ -1,7 +1,7 @@
 package publisher
 
 import (
-	"bitbucket.org/challengerdevs/gpsdriver/events"
+	"bitbucket.org/challengerdevs/tcpgateway/events"
 )
 
 // Service interface that represents a publisher service

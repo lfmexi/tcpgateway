@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"bitbucket.org/challengerdevs/gpsdriver/session/model"
+	"bitbucket.org/challengerdevs/tcpgateway/session/model"
 	"gopkg.in/mgo.v2"
 )
 

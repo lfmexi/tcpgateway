@@ -3,8 +3,8 @@ package session
 import (
 	"time"
 
-	"bitbucket.org/challengerdevs/gpsdriver/session/model"
-	"bitbucket.org/challengerdevs/gpsdriver/session/repository"
+	"bitbucket.org/challengerdevs/tcpgateway/session/model"
+	"bitbucket.org/challengerdevs/tcpgateway/session/repository"
 	"gopkg.in/mgo.v2/bson"
 )
 

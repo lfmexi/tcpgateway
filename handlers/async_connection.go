@@ -8,10 +8,10 @@ import (
 	"strings"
 	"sync"
 
-	"bitbucket.org/challengerdevs/gpsdriver/events"
-	"bitbucket.org/challengerdevs/gpsdriver/publisher"
-	"bitbucket.org/challengerdevs/gpsdriver/server"
-	"bitbucket.org/challengerdevs/gpsdriver/session"
+	"bitbucket.org/challengerdevs/tcpgateway/events"
+	"bitbucket.org/challengerdevs/tcpgateway/publisher"
+	"bitbucket.org/challengerdevs/tcpgateway/server"
+	"bitbucket.org/challengerdevs/tcpgateway/session"
 )
 
 // NewConnectionHandler creates a new driver connection handler

@@ -1,6 +1,6 @@
 package main
 
-import "bitbucket.org/challengerdevs/gpsdriver/config"
+import "bitbucket.org/challengerdevs/tcpgateway/config"
 
 func main() {
 	server := config.ConfigureServer()

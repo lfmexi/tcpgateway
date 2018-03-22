@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"bitbucket.org/challengerdevs/gpsdriver/events"
+	"bitbucket.org/challengerdevs/tcpgateway/events"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 

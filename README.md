@@ -1,7 +1,7 @@
 Devices Gateway
 ===============
 
-Build: [![CircleCI](https://circleci.com/bb/challengerdevs/gpsdriver.svg?style=svg)](https://circleci.com/bb/challengerdevs/gpsdriver)
+Build: [![CircleCI](https://circleci.com/bb/challengerdevs/tcpgateway.svg?style=svg)](https://circleci.com/bb/challengerdevs/gpsdriver)
 
 # Requirements
 

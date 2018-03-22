@@ -1,7 +1,7 @@
 package packets
 
 import (
-	"bitbucket.org/challengerdevs/gpsdriver/events"
+	"bitbucket.org/challengerdevs/tcpgateway/events"
 )
 
 // NewPacketEventEmitter creates a new PacketEventEmitter

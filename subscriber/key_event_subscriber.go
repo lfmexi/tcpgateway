@@ -3,7 +3,7 @@ package subscriber
 import (
 	"fmt"
 
-	"bitbucket.org/challengerdevs/gpsdriver/events"
+	"bitbucket.org/challengerdevs/tcpgateway/events"
 )
 
 // NewKeyBasedEventSubscriberFactory creates a new event subscriber factory based on keys

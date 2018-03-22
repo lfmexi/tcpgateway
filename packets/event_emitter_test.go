@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"bitbucket.org/challengerdevs/gpsdriver/events"
+	"bitbucket.org/challengerdevs/tcpgateway/events"
 )
 
 func TestNewPacketEventEmitter(t *testing.T) {

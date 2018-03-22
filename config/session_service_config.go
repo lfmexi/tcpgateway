@@ -1,8 +1,8 @@
 package config
 
 import (
-	"bitbucket.org/challengerdevs/gpsdriver/session"
-	"bitbucket.org/challengerdevs/gpsdriver/session/repository"
+	"bitbucket.org/challengerdevs/tcpgateway/session"
+	"bitbucket.org/challengerdevs/tcpgateway/session/repository"
 )
 
 func sessionRepository() repository.SessionRepository {

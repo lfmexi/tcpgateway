@@ -3,8 +3,8 @@ package config
 import (
 	"os"
 
-	"bitbucket.org/challengerdevs/gpsdriver/handlers"
-	"bitbucket.org/challengerdevs/gpsdriver/server"
+	"bitbucket.org/challengerdevs/tcpgateway/handlers"
+	"bitbucket.org/challengerdevs/tcpgateway/server"
 )
 
 func handler() server.Handler {

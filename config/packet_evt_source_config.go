@@ -1,8 +1,8 @@
 package config
 
 import (
-	"bitbucket.org/challengerdevs/gpsdriver/events"
-	"bitbucket.org/challengerdevs/gpsdriver/kafkasource"
+	"bitbucket.org/challengerdevs/tcpgateway/events"
+	"bitbucket.org/challengerdevs/tcpgateway/kafkasource"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 

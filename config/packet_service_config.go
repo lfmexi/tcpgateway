@@ -1,10 +1,10 @@
 package config
 
 import (
-	"bitbucket.org/challengerdevs/gpsdriver/events"
-	"bitbucket.org/challengerdevs/gpsdriver/packets"
-	"bitbucket.org/challengerdevs/gpsdriver/publisher"
-	"bitbucket.org/challengerdevs/gpsdriver/subscriber"
+	"bitbucket.org/challengerdevs/tcpgateway/events"
+	"bitbucket.org/challengerdevs/tcpgateway/packets"
+	"bitbucket.org/challengerdevs/tcpgateway/publisher"
+	"bitbucket.org/challengerdevs/tcpgateway/subscriber"
 )
 
 func packetEventEmitter() events.EventEmitter {
