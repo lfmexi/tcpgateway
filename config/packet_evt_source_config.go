@@ -4,32 +4,24 @@ import (
 	"bitbucket.org/challengerdevs/tcpgateway/events"
 	"bitbucket.org/challengerdevs/tcpgateway/kafkasource"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/jinzhu/copier"
 )
 
-func createConsumerFactory(consumerConfig *kafka.ConfigMap) kafkasource.CreateKafkaConsumer {
+func createConsumerFactory() kafkasource.CreateKafkaConsumer {
 	return func(groupID string) (kafkasource.KafkaConsumer, error) {
-		var config kafka.ConfigMap
-
-		groupIDConfig := kafka.ConfigMap{
-			"group.id": groupID,
+		responsesConfig := configuration.KafkaConsumers["responses"]
+		configMap := &kafka.ConfigMap{
+			"bootstrap.servers":        responsesConfig.Broker,
+			"go.events.channel.enable": true,
+			"group.id":                 groupID,
+			"default.topic.config":     kafka.ConfigMap{"auto.offset.reset": responsesConfig.AutoOffsetReset},
 		}
 
-		copier.Copy(&config, consumerConfig)
-		copier.Copy(&config, &groupIDConfig)
-		return kafka.NewConsumer(&config)
+		return kafka.NewConsumer(configMap)
 	}
 }
 
 func packetKafkaConsumerConfig() kafkasource.CreateKafkaConsumer {
-	responsesConfig := configuration.KafkaConsumers["responses"]
-	configMap := &kafka.ConfigMap{
-		"bootstrap.servers":        responsesConfig.Broker,
-		"go.events.channel.enable": true,
-		"default.topic.config":     kafka.ConfigMap{"auto.offset.reset": responsesConfig.AutoOffsetReset},
-	}
-
-	return createConsumerFactory(configMap)
+	return createConsumerFactory()
 }
 
 func packetKafkaProducerConfig() *kafka.ConfigMap {

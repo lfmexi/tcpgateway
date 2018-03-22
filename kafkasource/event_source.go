@@ -2,6 +2,7 @@ package kafkasource
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"bitbucket.org/challengerdevs/tcpgateway/events"
@@ -11,9 +12,7 @@ import (
 type kafkaEventsouce struct {
 	createConsumer       CreateKafkaConsumer
 	producer             KafkaProducer
-	incomingConsumers    chan string
 	consumersControlChan chan string
-	consumersControl     map[string]chan bool
 }
 
 // CreateKafkaEventSource creates an EventSource for kafka
@@ -22,8 +21,6 @@ func CreateKafkaEventSource(createConsumer CreateKafkaConsumer, producer KafkaPr
 		createConsumer,
 		producer,
 		make(chan string),
-		make(chan string),
-		make(map[string]chan bool),
 	}
 }
 
@@ -73,19 +70,6 @@ func (es *kafkaEventsouce) Consume(key string) (<-chan events.Event, error) {
 
 		for {
 			select {
-			case consumerKey := <-es.consumersControlChan:
-				consumerControl, ok := es.consumersControl[consumerKey]
-
-				if !ok {
-					return
-				}
-
-				delete(es.consumersControl, key)
-				close(consumerControl)
-			case consumerKey := <-es.incomingConsumers:
-				es.consumersControl[consumerKey] = stopChannel
-			case <-stopChannel:
-				break loop
 			case ev := <-consumer.Events():
 				switch e := ev.(type) {
 				case kafka.AssignedPartitions:
@@ -96,12 +80,14 @@ func (es *kafkaEventsouce) Consume(key string) (<-chan events.Event, error) {
 					consumer.Unassign()
 				case *kafka.Message:
 					eventChannel <- &kafkaEvent{e.Value}
-				case kafka.PartitionEOF:
-					fmt.Printf("%% Reached %v\n", e)
 				case kafka.Error:
 					fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
-					es.Stop(key)
 				}
+			case consumerKey := <-es.consumersControlChan:
+				log.Printf("Removing consumer for %s", consumerKey)
+				break loop
+			case <-stopChannel:
+				break loop
 			}
 		}
 
@@ -114,15 +100,7 @@ func (es *kafkaEventsouce) Consume(key string) (<-chan events.Event, error) {
 }
 
 func (es *kafkaEventsouce) Stop(key string) error {
-	consumerControl, ok := es.consumersControl[key]
-
-	if !ok {
-		return fmt.Errorf("Consumer %s does not exist", key)
-	}
-
-	consumerControl <- true
-
-	delete(es.consumersControl, key)
+	es.consumersControlChan <- key
 	return nil
 }
 

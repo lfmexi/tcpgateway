@@ -59,6 +59,10 @@ func (c *eventProducerHandler) CreateSession(conn net.Conn, stopWaitGroup *sync.
 				subscriber.Stop()
 				return
 			case event := <-eventChannel:
+				if event == nil {
+					continue
+				}
+
 				if _, err := writer.Write(event.Data()); err != nil {
 					log.Println(err)
 					continue
