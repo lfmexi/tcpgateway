@@ -1,6 +1,6 @@
 package main
 
-import "bitbucket.org/challengerdevs/tcpgateway/config"
+import "github.com/lfmexi/tcpgateway/config"
 
 func main() {
 	server := config.ConfigureServer()

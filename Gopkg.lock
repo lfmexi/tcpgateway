@@ -2,32 +2,43 @@
 
 
 [[projects]]
+  digest = "1:b16fbfbcc20645cb419f78325bb2e85ec729b338e996a228124d68931a6f2a37"
   name = "github.com/BurntSushi/toml"
   packages = ["."]
+  pruneopts = "UT"
   revision = "b26d9c308763d68093482582cea63d69be07a0f0"
   version = "v0.3.0"
 
 [[projects]]
+  digest = "1:ad9bac31f001ab730600bf9e80c4da7552cb9cb47c505f3fa0fe80de81682bbe"
   name = "github.com/confluentinc/confluent-kafka-go"
   packages = ["kafka"]
-  revision = "f696f02dcbb04d95b103c5b848bb15f749a996f7"
-  version = "v0.11.0"
+  pruneopts = "UT"
+  revision = "460e8e43b282a1a68219df600ef63442b81faf5f"
+  version = "v0.11.6"
 
 [[projects]]
   branch = "v2"
+  digest = "1:5052389c6c809eeced44ec24ff9958bfea70b9859b7a25061c6fd9086c8f8989"
   name = "gopkg.in/mgo.v2"
   packages = [
     ".",
     "bson",
     "internal/json",
     "internal/sasl",
-    "internal/scram"
+    "internal/scram",
   ]
+  pruneopts = "UT"
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a414d3bc983bbc970629be7c1423c6d2ff9903f0d0e18f9935b268f93c3f8b08"
+  input-imports = [
+    "github.com/BurntSushi/toml",
+    "github.com/confluentinc/confluent-kafka-go/kafka",
+    "gopkg.in/mgo.v2",
+    "gopkg.in/mgo.v2/bson",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

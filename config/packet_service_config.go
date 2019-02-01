@@ -1,10 +1,10 @@
 package config
 
 import (
-	"bitbucket.org/challengerdevs/tcpgateway/events"
-	"bitbucket.org/challengerdevs/tcpgateway/packets"
-	"bitbucket.org/challengerdevs/tcpgateway/publisher"
-	"bitbucket.org/challengerdevs/tcpgateway/subscriber"
+	"github.com/lfmexi/tcpgateway/events"
+	"github.com/lfmexi/tcpgateway/packets"
+	"github.com/lfmexi/tcpgateway/publisher"
+	"github.com/lfmexi/tcpgateway/subscriber"
 )
 
 func packetEventEmitter() events.EventEmitter {

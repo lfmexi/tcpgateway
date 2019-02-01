@@ -3,8 +3,8 @@ package config
 import (
 	"os"
 
-	"bitbucket.org/challengerdevs/tcpgateway/handlers"
-	"bitbucket.org/challengerdevs/tcpgateway/server"
+	"github.com/lfmexi/tcpgateway/handlers"
+	"github.com/lfmexi/tcpgateway/server"
 )
 
 func handler() server.Handler {

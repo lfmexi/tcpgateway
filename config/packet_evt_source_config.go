@@ -1,8 +1,8 @@
 package config
 
 import (
-	"bitbucket.org/challengerdevs/tcpgateway/events"
-	"bitbucket.org/challengerdevs/tcpgateway/kafkasource"
+	"github.com/lfmexi/tcpgateway/events"
+	"github.com/lfmexi/tcpgateway/kafkasource"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 

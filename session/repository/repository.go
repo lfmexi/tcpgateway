@@ -1,6 +1,6 @@
 package repository
 
-import "bitbucket.org/challengerdevs/tcpgateway/session/model"
+import "github.com/lfmexi/tcpgateway/session/model"
 
 // SessionRepository is the session repository
 type SessionRepository interface {

@@ -8,10 +8,10 @@ import (
 	"strings"
 	"sync"
 
-	"bitbucket.org/challengerdevs/tcpgateway/events"
-	"bitbucket.org/challengerdevs/tcpgateway/publisher"
-	"bitbucket.org/challengerdevs/tcpgateway/server"
-	"bitbucket.org/challengerdevs/tcpgateway/session"
+	"github.com/lfmexi/tcpgateway/events"
+	"github.com/lfmexi/tcpgateway/publisher"
+	"github.com/lfmexi/tcpgateway/server"
+	"github.com/lfmexi/tcpgateway/session"
 )
 
 // NewConnectionHandler creates a new driver connection handler

@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"bitbucket.org/challengerdevs/tcpgateway/events"
+	"github.com/lfmexi/tcpgateway/events"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 

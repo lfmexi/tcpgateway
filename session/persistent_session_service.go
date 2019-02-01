@@ -3,8 +3,8 @@ package session
 import (
 	"time"
 
-	"bitbucket.org/challengerdevs/tcpgateway/session/model"
-	"bitbucket.org/challengerdevs/tcpgateway/session/repository"
+	"github.com/lfmexi/tcpgateway/session/model"
+	"github.com/lfmexi/tcpgateway/session/repository"
 	"gopkg.in/mgo.v2/bson"
 )
 

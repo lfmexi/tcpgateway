@@ -1,7 +1,7 @@
 package publisher
 
 import (
-	"bitbucket.org/challengerdevs/tcpgateway/events"
+	"github.com/lfmexi/tcpgateway/events"
 )
 
 // Service interface that represents a publisher service

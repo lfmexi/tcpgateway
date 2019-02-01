@@ -1,7 +1,7 @@
 package packets
 
 import (
-	"bitbucket.org/challengerdevs/tcpgateway/events"
+	"github.com/lfmexi/tcpgateway/events"
 )
 
 // NewPacketEventEmitter creates a new PacketEventEmitter

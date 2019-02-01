@@ -1,8 +1,8 @@
 package config
 
 import (
-	"bitbucket.org/challengerdevs/tcpgateway/session"
-	"bitbucket.org/challengerdevs/tcpgateway/session/repository"
+	"github.com/lfmexi/tcpgateway/session"
+	"github.com/lfmexi/tcpgateway/session/repository"
 )
 
 func sessionRepository() repository.SessionRepository {

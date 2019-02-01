@@ -3,7 +3,7 @@ package subscriber
 import (
 	"fmt"
 
-	"bitbucket.org/challengerdevs/tcpgateway/events"
+	"github.com/lfmexi/tcpgateway/events"
 )
 
 // NewKeyBasedEventSubscriberFactory creates a new event subscriber factory based on keys

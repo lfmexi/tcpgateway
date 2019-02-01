@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"bitbucket.org/challengerdevs/tcpgateway/session/model"
+	"github.com/lfmexi/tcpgateway/session/model"
 	"gopkg.in/mgo.v2"
 )
 

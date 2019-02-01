@@ -30,4 +30,4 @@
 
 [[constraint]]
   name = "github.com/confluentinc/confluent-kafka-go"
-  version = "0.11.0"
+  version = "0.11.6"

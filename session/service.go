@@ -1,6 +1,6 @@
 package session
 
-import "bitbucket.org/challengerdevs/tcpgateway/session/model"
+import "github.com/lfmexi/tcpgateway/session/model"
 
 // Service interface that represents the session service
 type Service interface {

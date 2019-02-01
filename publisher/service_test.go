@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"bitbucket.org/challengerdevs/tcpgateway/events"
+	"github.com/lfmexi/tcpgateway/events"
 )
 
 func TestNewEventPublisherService(t *testing.T) {
